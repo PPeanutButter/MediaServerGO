@@ -2,8 +2,8 @@
   "port": 80,
   "webPath": "F:\\MediaClientWeb",
   "mountPoints": [
-    "media/pi/NAS600",
-    "media/pi/NAS500"
+    "F:\\media\\NAS500",
+    "F:\\media\\NAS600"
   ],
   "JWT": {
     "algorithm": "HS256",

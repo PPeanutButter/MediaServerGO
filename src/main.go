@@ -79,32 +79,59 @@ func MD5(str string) string {
 func getFileList(c *gin.Context) {
 	_path := c.Query("path")
 	//todo filepath.Abs(_path)，对这个结果做验证，防止目录穿越
-	dirs, err := os.ReadDir(_path)
+	user, errClaims := ParseToken(getToken(c), config)
+	if errClaims != nil {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+	dirs, err := diskManager.listDir(_path)
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
+	//0 = {string} "NAS500/Android"
 	result := make([]gin.H, 0, len(dirs))
 	for _, dir := range dirs {
 		var fType string
-		var length int64 = 0
-		info, _ := dir.Info()
-		if dir.IsDir() {
+		var length int64 = -1
+		var score int64 = -1
+		var watch_flag = ""
+		var bookmarkState = "bookmark_add"
+		var userLevelBookmark = path.Join(BookmarkCacheDir, user.userName)
+		var bookmark_flag_file = path.Join(userLevelBookmark, path.Base(dir)+".b")
+		file, e := os.Stat(path.Join(Root, dir))
+		if e != nil || (file.IsDir() && !PathExists(path.Join(Root, dir, ".cover"))) {
+			continue
+		}
+		if file.IsDir() {
 			fType = "Directory"
-		} else if !strings.HasPrefix(dir.Name(), ".") {
+			//todo watch_flag
+			//todo read .info
+		} else if !strings.HasPrefix(file.Name(), ".") {
 			fType = "Attach"
-			length = info.Size()
-		} else if strings.HasPrefix(mime.TypeByExtension(path.Ext(dir.Name())), "video/") {
+			length = file.Size()
+		} else if strings.HasPrefix(mime.TypeByExtension(path.Ext(file.Name())), "video/") {
 			fType = "File"
-			length = info.Size()
+			length = file.Size()
+			if PathExists(bookmark_flag_file) {
+				watch_flag = "watched"
+			}
 		} else {
 			continue
 		}
+		if PathExists(bookmark_flag_file) {
+			bookmarkState = "bookmark_added"
+		}
 		result = append(result, gin.H{
-			"name":      dir.Name(),
-			"mime_type": "application/octet-stream",
-			"type":      fType,
-			"length":    length,
-			"desc":      info.ModTime(),
+			"name":           file.Name(),
+			"mime_type":      "application/octet-stream",
+			"type":           fType,
+			"length":         length,
+			"desc":           file.ModTime().Format("Mon Jan _2 15:04:05 2006"),
+			"bookmark_state": bookmarkState,
+			"watched":        watch_flag,
+			"score":          score,
+			"lasts":          10.0,
+			"bitrate":        "",
+			"title":          "",
 		})
 	}
 	c.JSON(http.StatusOK, result)
@@ -120,10 +147,12 @@ func getDeviceName(c *gin.Context) {
 }
 
 var config Config
+var diskManager DiskManager
 
 func main() {
 	printLogo()
 	config = LoadConfig("config.json")
+	diskManager = *NewDiskManager(config.MountPoints)
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	authorized := router.Group("/", JWTAuth(config))

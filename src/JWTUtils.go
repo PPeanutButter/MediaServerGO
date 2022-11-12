@@ -33,22 +33,30 @@ func GenerateToken(userName string, cfg Config) (string, error) {
 }
 
 func VerifyToken(tokenString string, cfg Config) bool {
-	verifier, err1 := jwt.NewVerifierHS(jwt.Algorithm(cfg.JWT.Algorithm), []byte(cfg.JWT.Secret))
-	if err1 != nil {
-		return false
-	}
-	newToken, err2 := jwt.Parse([]byte(tokenString), verifier)
-	if err2 != nil {
-		return false
-	}
-	err3 := verifier.Verify(newToken)
-	if err3 != nil {
-		return false
-	}
-	var newClaims MyClaims
-	errClaims := json.Unmarshal(newToken.Claims(), &newClaims)
+	newClaims, errClaims := ParseToken(tokenString, cfg)
 	if errClaims != nil {
 		return false
 	}
 	return newClaims.IsValidAt(time.Now())
+}
+
+func ParseToken(tokenString string, cfg Config) (*MyClaims, error) {
+	verifier, err1 := jwt.NewVerifierHS(jwt.Algorithm(cfg.JWT.Algorithm), []byte(cfg.JWT.Secret))
+	if err1 != nil {
+		return nil, err1
+	}
+	newToken, err2 := jwt.Parse([]byte(tokenString), verifier)
+	if err2 != nil {
+		return nil, err2
+	}
+	err3 := verifier.Verify(newToken)
+	if err3 != nil {
+		return nil, err3
+	}
+	var newClaims MyClaims
+	errClaims := json.Unmarshal(newToken.Claims(), &newClaims)
+	if errClaims != nil {
+		return nil, errClaims
+	}
+	return &newClaims, nil
 }
