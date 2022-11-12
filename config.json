@@ -1,0 +1,12 @@
+{
+  "port": 80,
+  "webPath": "static",
+  "mountPoints": [
+    "media/pi/NAS600",
+    "media/pi/NAS500"
+  ],
+  "JWT": {
+    "algorithm": "HS256",
+    "secret": "your_key"
+  }
+}
