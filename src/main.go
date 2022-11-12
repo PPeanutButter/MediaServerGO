@@ -6,9 +6,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"github.com/goccy/go-json"
 	"io"
 	"log"
-	"mime"
 	"net/http"
 	"os"
 	"path"
@@ -87,37 +87,50 @@ func getFileList(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusBadRequest)
 	}
-	//0 = {string} "NAS500/Android"
 	result := make([]gin.H, 0, len(dirs))
 	for _, dir := range dirs {
 		var fType string
 		var length int64 = -1
 		var score int64 = -1
-		var watch_flag = ""
+		var title string
+		var watchFlag = "watched"
 		var bookmarkState = "bookmark_add"
 		var userLevelBookmark = path.Join(BookmarkCacheDir, user.userName)
-		var bookmark_flag_file = path.Join(userLevelBookmark, path.Base(dir)+".b")
+		var bookmarkFlagFile = path.Join(userLevelBookmark, path.Base(dir)+".b")
 		file, e := os.Stat(path.Join(Root, dir))
 		if e != nil || (file.IsDir() && !PathExists(path.Join(Root, dir, ".cover"))) {
 			continue
 		}
 		if file.IsDir() {
 			fType = "Directory"
-			//todo watch_flag
-			//todo read .info
+			innerDirs, _ := os.ReadDir(path.Join(Root, dir))
+			for _, innerDir := range innerDirs {
+				if isVideo(innerDir.Name()) {
+					if !PathExists(path.Join(userLevelBookmark, path.Base(innerDir.Name())+".b")) {
+						watchFlag = ""
+						break
+					}
+				}
+			}
+			if PathExists(path.Join(Root, dir, ".info")) {
+				var info Info
+				err = json.Unmarshal(readBytes(path.Join(Root, dir, ".info")), &info)
+				score = int64(info.UserScoreChart)
+				title = info.Title
+			}
 		} else if !strings.HasPrefix(file.Name(), ".") {
 			fType = "Attach"
 			length = file.Size()
-		} else if strings.HasPrefix(mime.TypeByExtension(path.Ext(file.Name())), "video/") {
+		} else if isVideo(file.Name()) {
 			fType = "File"
 			length = file.Size()
-			if PathExists(bookmark_flag_file) {
-				watch_flag = "watched"
+			if !PathExists(bookmarkFlagFile) {
+				watchFlag = ""
 			}
 		} else {
 			continue
 		}
-		if PathExists(bookmark_flag_file) {
+		if PathExists(bookmarkFlagFile) {
 			bookmarkState = "bookmark_added"
 		}
 		result = append(result, gin.H{
@@ -127,11 +140,11 @@ func getFileList(c *gin.Context) {
 			"length":         length,
 			"desc":           file.ModTime().Format("Mon Jan _2 15:04:05 2006"),
 			"bookmark_state": bookmarkState,
-			"watched":        watch_flag,
+			"watched":        watchFlag,
 			"score":          score,
 			"lasts":          10.0,
 			"bitrate":        "",
-			"title":          "",
+			"title":          title,
 		})
 	}
 	c.JSON(http.StatusOK, result)
@@ -151,7 +164,7 @@ var diskManager DiskManager
 
 func main() {
 	printLogo()
-	config = LoadConfig("config.json")
+	config = *newConfig("config.json")
 	diskManager = *NewDiskManager(config.MountPoints)
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()

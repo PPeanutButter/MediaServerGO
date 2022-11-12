@@ -25,7 +25,18 @@ type User struct {
 	Hash string `json:"hash"`
 }
 
-func LoadConfig(Path string) Config {
+type Info struct {
+	Title          string `json:"title"`
+	Certification  string `json:"certification"`
+	Genres         string `json:"genres"`
+	Runtime        string `json:"runtime"`
+	Tagline        string `json:"tagline"`
+	Overview       string `json:"overview"`
+	UserScoreChart int    `json:"user_score_chart"`
+	Url            string `json:"url"`
+}
+
+func newConfig(Path string) *Config {
 	jsonFile, err := os.Open(Path)
 	if err != nil {
 		panic(err)
@@ -42,5 +53,5 @@ func LoadConfig(Path string) Config {
 	if err != nil {
 		panic(err)
 	}
-	return config
+	return &config
 }
