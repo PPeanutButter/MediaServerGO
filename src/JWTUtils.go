@@ -11,12 +11,8 @@ type MyClaims struct {
 	jwt.RegisteredClaims
 }
 
-const (
-	TokenExpireDuration = time.Hour * 24 * 7
-)
-
 func GenerateToken(userName string, cfg Config) (string, error) {
-	expirationTime := time.Now().Add(TokenExpireDuration) // 两个小时有效期
+	expirationTime := time.Now().Add(time.Hour * time.Duration(config.JWT.DurationHours))
 	claims := &MyClaims{
 		userName: userName,
 		RegisteredClaims: jwt.RegisteredClaims{

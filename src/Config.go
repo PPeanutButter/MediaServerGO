@@ -11,11 +11,18 @@ type Config struct {
 	WebPath     string   `json:"webPath"`
 	MountPoints []string `json:"mountPoints"`
 	JWT         JWT      `json:"JWT"`
+	Users       []User   `json:"users"`
 }
 
 type JWT struct {
-	Algorithm string `json:"algorithm"`
-	Secret    string `json:"secret"`
+	Algorithm     string `json:"algorithm"`
+	Secret        string `json:"secret"`
+	DurationHours int64  `json:"durationHours"`
+}
+
+type User struct {
+	Name string `json:"name"`
+	Hash string `json:"hash"`
 }
 
 func LoadConfig(Path string) Config {

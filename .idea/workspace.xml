@@ -5,19 +5,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/MediaServerGo.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/Config.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/FileEntry.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/JWT.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/JWTUtils.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/version.txt" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/Path.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Config.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JWT.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/JWT.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JWTUtils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/JWTUtils.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -62,13 +57,14 @@
     &quot;RunOnceActivity.go.migrated.go.modules.settings&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;F:/HomeMediaSolution/MediaServerGo/assets&quot;,
+    &quot;last_opened_file_path&quot;: &quot;F:/MediaServerGo/src&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;settings.editor.selected.configurable&quot;: &quot;http.proxy&quot;
   }
 }</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="F:\MediaServerGo\src" />
       <recent name="F:\HomeMediaSolution\MediaServerGo\assets" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -102,14 +98,38 @@
       <updated>1668153305040</updated>
       <workItem from="1668153306361" duration="3336000" />
       <workItem from="1668214332101" duration="9272000" />
+      <workItem from="1668225437022" duration="13121000" />
     </task>
+    <task id="LOCAL-00001" summary="init">
+      <created>1668225619741</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1668225619741</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
   </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="init" />
+    <option name="LAST_COMMIT_MESSAGE" value="init" />
+  </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/main.go</url>
+          <line>109</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
