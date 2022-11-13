@@ -69,7 +69,7 @@ func (m *DiskManager) listDir(relativePath string) ([]string, error) {
 	var result []string
 	for _, root := range roots {
 		//检查软连接是否存在并防止目录穿越
-		if iRoot := path.Join(DiskManagerDir, root); PathExists(iRoot) && isAllowedPath(iRoot) {
+		if iRoot := path.Join(DiskManagerDir, root); PathExists(iRoot) && isAllowedPath(iRoot, Root) {
 			dirs, err := os.ReadDir(iRoot)
 			if err != nil {
 				return nil, err

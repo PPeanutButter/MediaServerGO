@@ -2,7 +2,10 @@ package main
 
 import (
 	"bytes"
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
+	"github.com/gin-gonic/gin"
 	"io"
 	"log"
 	"math"
@@ -10,6 +13,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 )
@@ -49,8 +53,10 @@ func readBytes(_path string) []byte {
 	return byteValue
 }
 
-func isAllowedPath(_path string) bool {
-	return strings.HasPrefix(_path, DiskManagerDir)
+func isAllowedPath(_path string, allowed string) bool {
+	a, _ := filepath.Abs(_path)
+	b, _ := filepath.Abs(allowed)
+	return strings.HasPrefix(a, b)
 }
 
 // cache: 改变时才写回
@@ -84,7 +90,7 @@ func timeSeconds(_path string) float64 {
 			log.Println(err)
 			return -1
 		}
-		_result, err := strconv.ParseFloat(out.String(), 32)
+		_result, err := strconv.ParseFloat(strings.Trim(strings.Trim(out.String(), "\n"), "\r\n"), 64)
 		result = _result
 		//更新内存缓存
 		bitrateCache[_path] = _result
@@ -105,9 +111,22 @@ func timeSeconds(_path string) float64 {
 func bitrate(_path string) string {
 	seconds := timeSeconds(_path)
 	if seconds > 0 {
-		return strconv.Itoa(int(math.Ceil(float64(8*getSize(_path)) / (seconds * 1024 * 1024))))
+		return strconv.Itoa(int(math.Ceil(float64(8*getSize(_path))/(seconds*1024*1024)))) + "Mbps"
 		//return str(math.ceil(8 * os.path.getsize(file_path) / (result * 1024 * 1024))) + "Mbps"
 	} else {
 		return ""
 	}
+}
+
+func MD5(str string) string {
+	h := md5.New()
+	h.Write([]byte(str))
+	return strings.ToUpper(hex.EncodeToString(h.Sum(nil)))
+}
+
+func disableCache(c *gin.Context) {
+	c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+	c.Header("Pragma", "no-cache")
+	c.Header("Expires", "0")
+	c.Header("Cache-Control", "public, max-age=0")
 }

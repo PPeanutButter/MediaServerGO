@@ -2,8 +2,7 @@ package main
 
 import (
 	"bufio"
-	"crypto/md5"
-	"encoding/hex"
+	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
@@ -38,16 +37,53 @@ func printLogo() {
 }
 
 func sendIndexHtml(c *gin.Context) {
+	disableCache(c)
 	c.HTML(http.StatusOK, "index.html", nil)
 }
 
 func sendLoginHtml(c *gin.Context) {
+	disableCache(c)
 	c.HTML(http.StatusOK, "login.html", nil)
+}
+
+func getFileCore(c *gin.Context, _path string) {
+	log.Println(_path)
+	if isAllowedPath(_path, Root) {
+		c.FileAttachment(_path, path.Base(_path))
+	} else {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+}
+
+func getFile(c *gin.Context) {
+	getFileCore(c, path.Join(Root, c.Query("path")))
+}
+
+func getFileV2(c *gin.Context) {
+	decoded, err := base64.URLEncoding.DecodeString(c.Query("path"))
+	if err != nil {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+	getFileCore(c, path.Join(Root, string(decoded)))
 }
 
 func getAssets(c *gin.Context) {
 	firstname := c.DefaultQuery("res", "index.hmtl")
-	c.File(config.WebPath + "/" + firstname)
+	_path := path.Join(config.WebPath, firstname)
+	if isAllowedPath(_path, config.WebPath) {
+		c.File(_path)
+	} else {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+}
+
+func getCover(c *gin.Context) {
+	_path := path.Join(Root, c.Query("cover"), ".cover")
+	if isAllowedPath(_path, Root) {
+		c.File(_path)
+	} else {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
 }
 
 func userLogin(c *gin.Context) {
@@ -70,12 +106,6 @@ func userLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "用户不存在"})
 }
 
-func MD5(str string) string {
-	h := md5.New()
-	h.Write([]byte(str))
-	return strings.ToUpper(hex.EncodeToString(h.Sum(nil)))
-}
-
 func getFileList(c *gin.Context) {
 	_path := c.Query("path")
 	user, errClaims := ParseToken(getToken(c), config)
@@ -84,7 +114,7 @@ func getFileList(c *gin.Context) {
 	}
 	dirs, err := diskManager.listDir(_path)
 	if err != nil {
-		c.AbortWithStatus(http.StatusBadRequest)
+		c.AbortWithStatus(http.StatusForbidden)
 	}
 	result := make([]gin.H, 0, len(dirs))
 	for _, dir := range dirs {
@@ -117,15 +147,15 @@ func getFileList(c *gin.Context) {
 				score = int64(info.UserScoreChart)
 				title = info.Title
 			}
-		} else if !strings.HasPrefix(file.Name(), ".") {
-			fType = "Attach"
-			length = file.Size()
 		} else if isVideo(file.Name()) {
 			fType = "File"
 			length = file.Size()
 			if !PathExists(bookmarkFlagFile) {
 				watchFlag = ""
 			}
+		} else if !strings.HasPrefix(file.Name(), ".") {
+			fType = "Attach"
+			length = file.Size()
 		} else {
 			continue
 		}
@@ -133,7 +163,7 @@ func getFileList(c *gin.Context) {
 			bookmarkState = "bookmark_added"
 		}
 		result = append(result, gin.H{
-			"name":           file.Name(),
+			"name":           dir,
 			"mime_type":      "application/octet-stream",
 			"type":           fType,
 			"length":         length,
@@ -158,6 +188,12 @@ func getDeviceName(c *gin.Context) {
 	}
 }
 
+func addRemoteDownloadTask(c *gin.Context) {
+	//https://github.com/zyxar/argo
+	//rpc, err := rpc2.New(context.Background(), "http://localhost:6800/jsonrpc", "0930", time.Second*10, &rpc2.DummyNotifier{})
+
+}
+
 var config Config
 var diskManager DiskManager
 
@@ -174,10 +210,14 @@ func main() {
 	router.GET("/login", sendLoginHtml)
 	router.GET("/getAssets", getAssets)
 	router.GET("/userLogin", userLogin)
+	router.GET("/remote_download", addRemoteDownloadTask)
 	/* authorized_router */
 	authorized.GET("/", sendIndexHtml)
 	authorized.GET("/getDeviceName", getDeviceName)
 	authorized.GET("/getFileList", getFileList)
+	authorized.GET("/getCover", getCover)
+	authorized.GET("/getFile/:name", getFile)
+	authorized.GET("/getFile2/:name", getFileV2)
 	/* path_save_router v1 */
 	//pathSafeV1
 	/* router end */
