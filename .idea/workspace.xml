@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完善getFileList">
-      <change afterPath="$PROJECT_DIR$/src/Utils.go" afterDir="false" />
+    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完成getFileList">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Config.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DiskManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/DiskManager.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -135,12 +135,22 @@
     <MESSAGE value="init" />
     <MESSAGE value="完成部分api" />
     <MESSAGE value="完善getFileList" />
-    <option name="LAST_COMMIT_MESSAGE" value="完善getFileList" />
+    <MESSAGE value="完成getFileList" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成getFileList" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
   </component>
   <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/main.go</url>
+          <line>85</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
     <watches-manager>
       <configuration name="GoApplicationRunConfiguration">
         <watch expression="*(*&quot;[]string&quot;)(824638238616)" />

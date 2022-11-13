@@ -13,6 +13,7 @@ const (
 	Root             = DiskManagerDir
 	PreviewCacheDir  = "_preview_cache_dir"
 	BookmarkCacheDir = "_bookmark_cache_dir"
+	BitRateCacheFile = "bit_rate_cache.json"
 )
 
 func PathExists(path string) bool {
@@ -67,8 +68,8 @@ func (m *DiskManager) listDir(relativePath string) ([]string, error) {
 	}
 	var result []string
 	for _, root := range roots {
-		//检查软连接是否存在
-		if iRoot := path.Join(DiskManagerDir, root); PathExists(iRoot) {
+		//检查软连接是否存在并防止目录穿越
+		if iRoot := path.Join(DiskManagerDir, root); PathExists(iRoot) && isAllowedPath(iRoot) {
 			dirs, err := os.ReadDir(iRoot)
 			if err != nil {
 				return nil, err

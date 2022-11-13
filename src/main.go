@@ -78,7 +78,6 @@ func MD5(str string) string {
 
 func getFileList(c *gin.Context) {
 	_path := c.Query("path")
-	//todo filepath.Abs(_path)，对这个结果做验证，防止目录穿越
 	user, errClaims := ParseToken(getToken(c), config)
 	if errClaims != nil {
 		c.AbortWithStatus(http.StatusForbidden)
@@ -138,12 +137,12 @@ func getFileList(c *gin.Context) {
 			"mime_type":      "application/octet-stream",
 			"type":           fType,
 			"length":         length,
-			"desc":           file.ModTime().Format("Mon Jan _2 15:04:05 2006"),
+			"desc":           file.ModTime().Format("Mon Jan 2 15:04:05 2006"),
 			"bookmark_state": bookmarkState,
 			"watched":        watchFlag,
 			"score":          score,
-			"lasts":          10.0,
-			"bitrate":        "",
+			"lasts":          timeSeconds(path.Join(Root, dir)),
+			"bitrate":        bitrate(path.Join(Root, dir)),
 			"title":          title,
 		})
 	}
