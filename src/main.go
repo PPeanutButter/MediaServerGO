@@ -2,17 +2,23 @@ package main
 
 import (
 	"bufio"
+	"bytes"
+	"context"
 	"encoding/base64"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
+	"github.com/zyxar/argo/rpc"
+	"golang.org/x/sync/semaphore"
 	"io"
 	"log"
 	"net/http"
 	"os"
+	"os/exec"
 	"path"
 	"strconv"
 	"strings"
+	"time"
 )
 
 func printLogo() {
@@ -47,7 +53,6 @@ func sendLoginHtml(c *gin.Context) {
 }
 
 func getFileCore(c *gin.Context, _path string) {
-	log.Println(_path)
 	if isAllowedPath(_path, Root) {
 		c.FileAttachment(_path, path.Base(_path))
 	} else {
@@ -124,7 +129,7 @@ func getFileList(c *gin.Context) {
 		var title string
 		var watchFlag = "watched"
 		var bookmarkState = "bookmark_add"
-		var userLevelBookmark = path.Join(BookmarkCacheDir, user.userName)
+		var userLevelBookmark = path.Join(BookmarkCacheDir, user.UserName)
 		var bookmarkFlagFile = path.Join(userLevelBookmark, path.Base(dir)+".b")
 		file, e := os.Stat(path.Join(Root, dir))
 		if e != nil || (file.IsDir() && !PathExists(path.Join(Root, dir, ".cover"))) {
@@ -189,13 +194,91 @@ func getDeviceName(c *gin.Context) {
 }
 
 func addRemoteDownloadTask(c *gin.Context) {
-	//https://github.com/zyxar/argo
-	//rpc, err := rpc2.New(context.Background(), "http://localhost:6800/jsonrpc", "0930", time.Second*10, &rpc2.DummyNotifier{})
+	jsonRPC, err := rpc.New(context.Background(), "http://localhost:6800/jsonrpc", "0930", time.Second*10, &rpc.DummyNotifier{})
+	if err != nil {
+		c.AbortWithStatus(http.StatusServiceUnavailable)
+		return
+	}
+	defer func(jsonRPC rpc.Client) {
+		_ = jsonRPC.Close()
+	}(jsonRPC)
+	g, err := jsonRPC.AddURI([]string{"targetURL"}, gin.H{
+		"out":        "",
+		"dir":        "",
+		"user-agent": "AndroidDownloadManager/9 (Linux; U; Android 9; MIX 2 Build/PKQ1.190118.001)",
+	})
+	if err != nil {
+		c.AbortWithStatus(http.StatusServiceUnavailable)
+		return
+	}
+	c.String(http.StatusOK, "%s <!-- %s -->", "<script>window.close();</script>", g)
+}
 
+func getVideoPreview(c *gin.Context) {
+	_path := c.Query("path")
+	previewFile := path.Join(PreviewCacheDir, path.Base(_path)+".jpg")
+	if !PathExists(previewFile) {
+		err := videoPreviewLock.Acquire(context.Background(), 1)
+		defer videoPreviewLock.Release(1)
+		if err != nil {
+			//视频预览图服务不可用
+			c.AbortWithStatus(http.StatusServiceUnavailable)
+			return
+		}
+		cmd := exec.Command("ffmpeg",
+			"-i", path.Join(Root, _path), "-ss",
+			"00:00:05.000", "-vframes",
+			"1",
+			previewFile,
+		)
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		err = cmd.Run()
+		if err != nil {
+			log.Println(err)
+			c.AbortWithStatus(http.StatusServiceUnavailable)
+			return
+		}
+	}
+	if isAllowedPath(previewFile, PreviewCacheDir) {
+		c.File(previewFile)
+	} else {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+}
+
+func toggleBookmark(c *gin.Context) {
+	_path := c.Query("path")
+	user, errClaims := ParseToken(getToken(c), config)
+	if errClaims != nil {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+	var userLevelBookmark = path.Join(BookmarkCacheDir, user.UserName)
+	if !PathExists(userLevelBookmark) {
+		_ = os.MkdirAll(userLevelBookmark, 0777)
+	}
+	var bookmarkFlagFile = path.Join(userLevelBookmark, path.Base(_path)+".b")
+	state := PathExists(bookmarkFlagFile)
+	if state {
+		_ = os.Remove(bookmarkFlagFile)
+	} else {
+		fp, _ := os.Create(bookmarkFlagFile)
+		defer func(fp *os.File) {
+			_ = fp.Close()
+		}(fp)
+	}
+}
+
+func getDeviceInfo(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"temp": 39.9,
+		"fan":  true,
+	})
 }
 
 var config Config
 var diskManager DiskManager
+var videoPreviewLock = semaphore.NewWeighted(4)
 
 func main() {
 	printLogo()
@@ -204,7 +287,6 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	authorized := router.Group("/", JWTAuth(config))
-	//pathSafeV1 := authorized.Group("/", PathSafeV1(config))
 	router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
 	/* router */
 	router.GET("/login", sendLoginHtml)
@@ -218,8 +300,9 @@ func main() {
 	authorized.GET("/getCover", getCover)
 	authorized.GET("/getFile/:name", getFile)
 	authorized.GET("/getFile2/:name", getFileV2)
-	/* path_save_router v1 */
-	//pathSafeV1
+	authorized.GET("/getVideoPreview", getVideoPreview)
+	authorized.GET("/toggleBookmark", toggleBookmark)
+	authorized.GET("/getDeviceInfo", getDeviceInfo)
 	/* router end */
 	if err := router.Run(":" + strconv.Itoa(config.Port)); err != nil {
 		log.Fatal("Starting NAS Failed: ", err)

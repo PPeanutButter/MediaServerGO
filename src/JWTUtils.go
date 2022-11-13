@@ -7,14 +7,14 @@ import (
 )
 
 type MyClaims struct {
-	userName string
+	UserName string
 	jwt.RegisteredClaims
 }
 
 func GenerateToken(userName string, cfg Config) (string, error) {
 	expirationTime := time.Now().Add(time.Hour * time.Duration(config.JWT.DurationHours))
 	claims := &MyClaims{
-		userName: userName,
+		UserName: userName,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 		},
