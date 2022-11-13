@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"io"
+	"log"
 	"os"
 )
 
@@ -51,6 +52,7 @@ func newConfig(Path string) *Config {
 	var config Config
 	err = json.Unmarshal(byteValue, &config)
 	if err != nil {
+		log.Println("newConfig", "读取Config失败、请检查字段", err)
 		panic(err)
 	}
 	return &config

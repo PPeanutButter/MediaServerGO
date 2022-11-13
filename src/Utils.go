@@ -27,6 +27,7 @@ func isFile(_path string) bool {
 	if e == nil {
 		return !file.IsDir()
 	}
+	log.Println("isFile", "os.Stat", e)
 	return false
 }
 
@@ -35,19 +36,18 @@ func getSize(_path string) int64 {
 	if e == nil {
 		return file.Size()
 	}
+	log.Println("getSize", "os.Stat", e)
 	return -1
 }
 
 func readBytes(_path string) []byte {
 	jsonFile, err := os.Open(_path)
 	if err != nil {
+		log.Println("readBytes", "os.Open", err)
 		panic(err)
 	}
 	defer func(jsonFile *os.File) {
-		err := jsonFile.Close()
-		if err != nil {
-			panic(err)
-		}
+		_ = jsonFile.Close()
 	}(jsonFile)
 	byteValue, _ := io.ReadAll(jsonFile)
 	return byteValue
@@ -67,6 +67,7 @@ func timeSeconds(_path string) float64 {
 	if bitrateCache == nil && PathExists(BitRateCacheFile) {
 		err := json.Unmarshal(readBytes(BitRateCacheFile), &bitrateCache)
 		if err != nil {
+			log.Println("timeSeconds", "Unmarshal", err)
 			return -1
 		}
 	}
@@ -87,7 +88,7 @@ func timeSeconds(_path string) float64 {
 		cmd.Stdout = &out
 		err := cmd.Run()
 		if err != nil {
-			log.Println(err)
+			log.Println("timeSeconds", "调用ffprobe", err)
 			return -1
 		}
 		_result, err := strconv.ParseFloat(strings.Trim(strings.Trim(out.String(), "\n"), "\r\n"), 64)
@@ -112,7 +113,6 @@ func bitrate(_path string) string {
 	seconds := timeSeconds(_path)
 	if seconds > 0 {
 		return strconv.Itoa(int(math.Ceil(float64(8*getSize(_path))/(seconds*1024*1024)))) + "Mbps"
-		//return str(math.ceil(8 * os.path.getsize(file_path) / (result * 1024 * 1024))) + "Mbps"
 	} else {
 		return ""
 	}

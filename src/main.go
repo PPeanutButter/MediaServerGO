@@ -100,6 +100,8 @@ func userLogin(c *gin.Context) {
 				token, err := GenerateToken(user.Name, config)
 				if err == nil {
 					c.SetCookie("token", token, 604800, "/", "", false, false)
+				} else {
+					log.Println("userLogin", "GenerateToken", err)
 				}
 				c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "ok"})
 			} else {
@@ -193,9 +195,11 @@ func getDeviceName(c *gin.Context) {
 	}
 }
 
+// todo test
 func addRemoteDownloadTask(c *gin.Context) {
 	jsonRPC, err := rpc.New(context.Background(), "http://localhost:6800/jsonrpc", "0930", time.Second*10, &rpc.DummyNotifier{})
 	if err != nil {
+		log.Println("addRemoteDownloadTask", "连接Aria2失败", err)
 		c.AbortWithStatus(http.StatusServiceUnavailable)
 		return
 	}
@@ -208,6 +212,7 @@ func addRemoteDownloadTask(c *gin.Context) {
 		"user-agent": "AndroidDownloadManager/9 (Linux; U; Android 9; MIX 2 Build/PKQ1.190118.001)",
 	})
 	if err != nil {
+		log.Println("addRemoteDownloadTask", "提交任务失败", err)
 		c.AbortWithStatus(http.StatusServiceUnavailable)
 		return
 	}
@@ -221,7 +226,7 @@ func getVideoPreview(c *gin.Context) {
 		err := videoPreviewLock.Acquire(context.Background(), 1)
 		defer videoPreviewLock.Release(1)
 		if err != nil {
-			//视频预览图服务不可用
+			log.Println("getVideoPreview", "获取锁失败", err)
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
@@ -235,7 +240,7 @@ func getVideoPreview(c *gin.Context) {
 		cmd.Stdout = &out
 		err = cmd.Run()
 		if err != nil {
-			log.Println(err)
+			log.Println("getVideoPreview", "调用ffmpeg失败", err)
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
@@ -251,7 +256,9 @@ func toggleBookmark(c *gin.Context) {
 	_path := c.Query("path")
 	user, errClaims := ParseToken(getToken(c), config)
 	if errClaims != nil {
+		log.Println("toggleBookmark", "从Token获取用户失败", errClaims)
 		c.AbortWithStatus(http.StatusForbidden)
+		return
 	}
 	var userLevelBookmark = path.Join(BookmarkCacheDir, user.UserName)
 	if !PathExists(userLevelBookmark) {
@@ -269,6 +276,7 @@ func toggleBookmark(c *gin.Context) {
 	}
 }
 
+// todo
 func getDeviceInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"temp": 39.9,

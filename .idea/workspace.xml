@@ -4,11 +4,13 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完成部分api">
+    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完成大部分api">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Config.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/DiskManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/DiskManager.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/JWTUtils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/JWTUtils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/version.txt" beforeDir="false" afterPath="$PROJECT_DIR$/version.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -136,7 +138,8 @@
     <MESSAGE value="完善getFileList" />
     <MESSAGE value="完成getFileList" />
     <MESSAGE value="完成部分api" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成部分api" />
+    <MESSAGE value="完成大部分api" />
+    <option name="LAST_COMMIT_MESSAGE" value="完成大部分api" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>

@@ -1,6 +1,7 @@
 package main
 
 import (
+	"log"
 	"os"
 	"path"
 	"path/filepath"
@@ -49,6 +50,7 @@ func NewDiskManager(mountPoints []string) *DiskManager {
 		diskNames = append(diskNames, path.Base(filepath.ToSlash(mountPoint)))
 		err := os.Symlink(mountPoint, path.Join(DiskManagerDir, path.Base(filepath.ToSlash(mountPoint))))
 		if err != nil {
+			log.Println("NewDiskManager", "初始化DiskManager-创建软连接失败", err)
 			panic(err)
 		}
 	}
@@ -72,6 +74,7 @@ func (m *DiskManager) listDir(relativePath string) ([]string, error) {
 		if iRoot := path.Join(DiskManagerDir, root); PathExists(iRoot) && isAllowedPath(iRoot, Root) {
 			dirs, err := os.ReadDir(iRoot)
 			if err != nil {
+				log.Println("DiskManager.listDir", "系统调用失败", err)
 				return nil, err
 			}
 			tmp := make([]string, len(dirs))
