@@ -51,7 +51,7 @@ func ParseToken(tokenString string, cfg Config) (*MyClaims, error) {
 	}
 	newToken, err := jwt.Parse([]byte(tokenString), verifier)
 	if err != nil {
-		log.Println("ParseToken", "NewVerifierHS", err)
+		log.Println("ParseToken", "Parse", err)
 		return nil, err
 	}
 	err = verifier.Verify(newToken)

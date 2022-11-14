@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-func JWTAuth(cfg Config) gin.HandlerFunc {
+func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth := getToken(c)
 		if len(auth) == 0 { //找不到任何token

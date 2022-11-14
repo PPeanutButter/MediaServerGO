@@ -97,11 +97,14 @@ func userLogin(c *gin.Context) {
 		if name == user.Name {
 			if MD5(psw) == user.Hash {
 				// verification passed
-				token, err := GenerateToken(user.Name, config)
-				if err == nil {
-					c.SetCookie("token", token, 604800, "/", "", false, false)
-				} else {
-					log.Println("userLogin", "GenerateToken", err)
+				if t := getToken(c); t == "" || !VerifyToken(t, config) {
+					//如果token有效就不更新了，以免url改变播放器不能记住播放进度
+					token, err := GenerateToken(user.Name, config)
+					if err == nil {
+						c.SetCookie("token", token, int(3600*config.JWT.DurationHours), "/", "", false, false)
+					} else {
+						log.Println("userLogin", "GenerateToken", err)
+					}
 				}
 				c.JSON(http.StatusOK, gin.H{"code": 200, "msg": "ok"})
 			} else {
@@ -299,7 +302,7 @@ func main() {
 	diskManager = *NewDiskManager(config.MountPoints)
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
-	authorized := router.Group("/", JWTAuth(config))
+	authorized := router.Group("/", JWTAuth())
 	router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
 	/* router */
 	router.GET("/login", sendLoginHtml)
