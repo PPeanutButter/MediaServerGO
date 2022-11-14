@@ -10,7 +10,7 @@ import (
 //var diskWeight = []int{3, 3, 1, 1}
 
 const (
-	DiskManagerDir   = "F:/_disk_manager_dir"
+	DiskManagerDir   = "_disk_manager_dir"
 	Root             = DiskManagerDir
 	PreviewCacheDir  = "_preview_cache_dir"
 	BookmarkCacheDir = "_bookmark_cache_dir"

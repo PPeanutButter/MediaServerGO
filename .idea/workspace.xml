@@ -4,13 +4,9 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完成大部分api">
+    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="优化错误显示">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Config.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Config.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/DiskManager.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/DiskManager.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/JWTUtils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/JWTUtils.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/version.txt" beforeDir="false" afterPath="$PROJECT_DIR$/version.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -31,7 +27,6 @@
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/config.json" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/Config.go" root0="FORCE_HIGHLIGHTING" />
-    <setting file="file://$PROJECT_DIR$/src/FileEntry.go" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/JWT.go" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/JWTUtils.go" root0="FORCE_HIGHLIGHTING" />
     <setting file="file://$PROJECT_DIR$/src/main.go" root0="FORCE_HIGHLIGHTING" />
@@ -139,7 +134,8 @@
     <MESSAGE value="完成getFileList" />
     <MESSAGE value="完成部分api" />
     <MESSAGE value="完成大部分api" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成大部分api" />
+    <MESSAGE value="优化错误显示" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化错误显示" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
