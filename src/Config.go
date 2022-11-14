@@ -13,6 +13,7 @@ type Config struct {
 	MountPoints []string `json:"mountPoints"`
 	JWT         JWT      `json:"JWT"`
 	Users       []User   `json:"users"`
+	Aria2       Aria2    `json:"Aria2"`
 }
 
 type JWT struct {
@@ -35,6 +36,11 @@ type Info struct {
 	Overview       string `json:"overview"`
 	UserScoreChart int    `json:"user_score_chart"`
 	Url            string `json:"url"`
+}
+
+type Aria2 struct {
+	RPC   string `json:"RPC"`
+	Token string `json:"Token"`
 }
 
 func newConfig(Path string) *Config {

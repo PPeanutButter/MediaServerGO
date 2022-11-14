@@ -6,6 +6,8 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"github.com/gin-gonic/gin"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 	"io"
 	"log"
 	"math"
@@ -14,6 +16,7 @@ import (
 	"os/exec"
 	"path"
 	"path/filepath"
+	"regexp"
 	"strconv"
 	"strings"
 )
@@ -129,4 +132,17 @@ func disableCache(c *gin.Context) {
 	c.Header("Pragma", "no-cache")
 	c.Header("Expires", "0")
 	c.Header("Cache-Control", "public, max-age=0")
+}
+
+func getSeasonName(_path string) (string, bool) {
+	var re = regexp.MustCompile(`(?m)(.*\.S\d+)`)
+	for _, match := range re.FindAllString(_path, -1) {
+		return ToCamelCase(match), true
+	}
+	return "", false
+}
+
+func ToCamelCase(s string) string {
+	s = strings.ReplaceAll(s, ".", " ")
+	return cases.Title(language.Und).String(s)
 }

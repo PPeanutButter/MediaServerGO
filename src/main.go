@@ -195,9 +195,8 @@ func getDeviceName(c *gin.Context) {
 	}
 }
 
-// todo test
 func addRemoteDownloadTask(c *gin.Context) {
-	jsonRPC, err := rpc.New(context.Background(), "http://localhost:6800/jsonrpc", "0930", time.Second*10, &rpc.DummyNotifier{})
+	jsonRPC, err := rpc.New(context.Background(), config.Aria2.RPC, config.Aria2.Token, time.Second*10, &rpc.DummyNotifier{})
 	if err != nil {
 		log.Println("addRemoteDownloadTask", "连接Aria2失败", err)
 		c.AbortWithStatus(http.StatusServiceUnavailable)
@@ -206,9 +205,15 @@ func addRemoteDownloadTask(c *gin.Context) {
 	defer func(jsonRPC rpc.Client) {
 		_ = jsonRPC.Close()
 	}(jsonRPC)
-	g, err := jsonRPC.AddURI([]string{"targetURL"}, gin.H{
-		"out":        "",
-		"dir":        "",
+	out := c.PostForm("out")
+	url := c.PostForm("url")
+	seasonName, ok := getSeasonName(out)
+	if !ok {
+		seasonName = "Download"
+	}
+	g, err := jsonRPC.AddURI([]string{url}, gin.H{
+		"out":        out,
+		"dir":        path.Join(Root, diskManager.getMaxAvailableDisk(seasonName), seasonName),
 		"user-agent": "AndroidDownloadManager/9 (Linux; U; Android 9; MIX 2 Build/PKQ1.190118.001)",
 	})
 	if err != nil {
@@ -298,6 +303,7 @@ func main() {
 	router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
 	/* router */
 	router.GET("/login", sendLoginHtml)
+	router.POST("/remote_download", addRemoteDownloadTask)
 	router.GET("/getAssets", getAssets)
 	router.GET("/userLogin", userLogin)
 	router.GET("/remote_download", addRemoteDownloadTask)
