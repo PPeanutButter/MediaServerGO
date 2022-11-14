@@ -1,13 +1,15 @@
 package main
 
 import (
+	"fmt"
+	"github.com/shirou/gopsutil/v3/disk"
 	"log"
 	"os"
 	"path"
 	"path/filepath"
 )
 
-//var diskWeight = []int{3, 3, 1, 1}
+var DiskWeight = []uint64{2, 2, 1, 1}
 
 const (
 	DiskManagerDir   = "_disk_manager_dir"
@@ -61,10 +63,10 @@ func NewDiskManager(mountPoints []string) *DiskManager {
 	}
 }
 
-func (m *DiskManager) listDir(relativePath string) ([]string, error) {
+func (this *DiskManager) listDir(relativePath string) ([]string, error) {
 	var roots []string
 	if relativePath == "/" {
-		roots = m.DiskNames
+		roots = this.DiskNames
 	} else {
 		roots = []string{relativePath}
 	}
@@ -85,4 +87,36 @@ func (m *DiskManager) listDir(relativePath string) ([]string, error) {
 		}
 	}
 	return result, nil
+}
+
+func (this *DiskManager) getMaxAvailableDisk(folder string) string {
+	var maxSize uint64 = 0
+	var maxDisk = ""
+	for i, mountPoint := range this.MountPoints {
+		if PathExists(path.Join(mountPoint, folder)) {
+			return path.Base(mountPoint)
+		}
+		stat, err := disk.Usage(mountPoint)
+		if err != nil {
+			log.Println("DiskManager.getMaxAvailableDisk", "获取磁盘大小失败", err)
+			return path.Base(mountPoint)
+		}
+		free := stat.Free * DiskWeight[i]
+		if free > maxSize {
+			maxSize = free
+			maxDisk = path.Base(mountPoint)
+		}
+	}
+	return maxDisk
+}
+
+func (this *DiskManager) string() string {
+	var re = ""
+	for _, mountPoint := range this.MountPoints {
+		stat, err := disk.Usage(mountPoint)
+		if err == nil {
+			re = re + fmt.Sprintf("%s\t%dused\t%dfree\n", mountPoint, stat.Used, stat.Free)
+		}
+	}
+	return re
 }
