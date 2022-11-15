@@ -1,0 +1,73 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Distribution
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  Linux_Build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build_AMD64
+      run: 
+        go build -o server-linux-amd64 ./src
+    - name: Pack_AMD64
+      run: 
+        tar -czvf server-linux-amd64.tar.gz server-linux-amd64 config.json version.txt README.md
+        
+    - name: Upload_AMD64
+      uses: actions/upload-artifact@v3
+      with:
+        name: server-linux-amd64.tar.gz
+        path: server-linux-amd64.tar.gz
+
+    - name: Build_ARM64
+      run: |
+        sudo apt-get install -y gcc-aarch64-linux-gnu
+        aarch64-linux-gnu-gcc -v
+        CGO_ENABLED=1 CC=aarch64-linux-gnu-gcc GOOS=linux GOARCH=arm64 go build -o server-linux-arm64 -ldflags '-s -w --extldflags "-static -fpic"' ./src/
+
+    - name: Pack_ARM64
+      run: 
+        tar -czvf server-linux-arm64.tar.gz server-linux-arm64 config.json version.txt README.md
+        
+    - name: Upload_ARM64
+      uses: actions/upload-artifact@v3
+      with:
+        name: server-linux-arm64.tar.gz
+        path: server-linux-arm64.tar.gz
+  Windows_Build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.18
+
+    - name: Build_AMD64
+      run: 
+        go build -o server-win-amd64 ./src
+    - name: Pack_AMD64
+      run: 
+        tar -czvf server-win-amd64.tar.gz server-win-amd64 config.json version.txt README.md
+        
+    - name: Upload_AMD64
+      uses: actions/upload-artifact@v3
+      with:
+        name: server-win-amd64.tar.gz
+        path: server-win-amd64.tar.gz
