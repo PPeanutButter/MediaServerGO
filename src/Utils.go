@@ -135,7 +135,7 @@ func disableCache(c *gin.Context) {
 }
 
 func getSeasonName(_path string) (string, bool) {
-	var re = regexp.MustCompile(`(?m)(.*\.S\d+)`)
+	var re = regexp.MustCompile(`(?mi)(.*\.S\d+)`)
 	for _, match := range re.FindAllString(_path, -1) {
 		return ToCamelCase(match), true
 	}
