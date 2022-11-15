@@ -40,6 +40,7 @@ type Info struct {
 
 type Aria2 struct {
 	RPC   string `json:"RPC"`
+	UA    string `json:"UA"`
 	Token string `json:"Token"`
 }
 

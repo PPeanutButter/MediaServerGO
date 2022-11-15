@@ -217,7 +217,7 @@ func addRemoteDownloadTask(c *gin.Context) {
 	g, err := jsonRPC.AddURI([]string{url}, gin.H{
 		"out":        out,
 		"dir":        path.Join(Root, diskManager.getMaxAvailableDisk(seasonName), seasonName),
-		"user-agent": "AndroidDownloadManager/9 (Linux; U; Android 9; MIX 2 Build/PKQ1.190118.001)",
+		"user-agent": config.Aria2.UA,
 	})
 	if err != nil {
 		log.Println("addRemoteDownloadTask", "提交任务失败", err)

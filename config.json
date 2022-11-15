@@ -3,6 +3,7 @@
   "webPath": "F:\\MediaClientWeb",
   "Aria2": {
     "RPC": "http://localhost:6800/jsonrpc",
+    "UA": "AndroidDownloadManager/12 (Linux; U; Android 12; 2206122SC Build/SKQ1.220303.001)",
     "Token": ""
   },
   "mountPoints": [
