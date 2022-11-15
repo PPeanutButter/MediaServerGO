@@ -16,6 +16,7 @@ import (
 	"os"
 	"os/exec"
 	"path"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
@@ -214,10 +215,11 @@ func addRemoteDownloadTask(c *gin.Context) {
 	if !ok {
 		seasonName = "Download"
 	}
+	dir, _ := filepath.Abs(path.Join(Root, diskManager.getMaxAvailableDisk(seasonName), seasonName))
 	g, err := jsonRPC.AddURI([]string{url}, gin.H{
-		"out":        out,
-		"dir":        path.Join(Root, diskManager.getMaxAvailableDisk(seasonName), seasonName),
-		"user-agent": config.Aria2.UA,
+		"out":    out,
+		"dir":    dir,
+		"header": "User-Agent:" + config.Aria2.UA + "\nAccept-Encoding:identity\nConnection:Keep-Alive",
 	})
 	if err != nil {
 		log.Println("addRemoteDownloadTask", "提交任务失败", err)
