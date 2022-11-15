@@ -11,6 +11,9 @@ jobs:
 
   Linux_Build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        PLATFORMS: [amd64, arm64, armhf, i386]
     steps:
     - uses: actions/checkout@v3
 
@@ -19,36 +22,24 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Build_AMD64
-      run: 
-        go build -o server-linux-amd64 ./src
-    - name: Pack_AMD64
-      run: 
-        tar -czvf server-linux-amd64.tar.gz server-linux-amd64 config.json version.txt README.md
-        
-    - name: Upload_AMD64
-      uses: actions/upload-artifact@v3
-      with:
-        name: server-linux-amd64.tar.gz
-        path: server-linux-amd64.tar.gz
-
-    - name: Build_ARM64
+    - name: Build_Binary
       run: |
-        sudo apt-get install -y gcc-aarch64-linux-gnu
-        aarch64-linux-gnu-gcc -v
-        CGO_ENABLED=1 CC=aarch64-linux-gnu-gcc GOOS=linux GOARCH=arm64 go build -o server-linux-arm64 -ldflags '-s -w --extldflags "-static -fpic"' ./src/
-
-    - name: Pack_ARM64
+        CGO_ENABLED=0 GOOS=linux GOARCH=${{ matrix.PLATFORMS }} go build -o server-linux-${{ matrix.PLATFORMS }} -ldflags '-s -w --extldflags "-static -fpic"' ./src/
+    - name: Pack
       run: 
-        tar -czvf server-linux-arm64.tar.gz server-linux-arm64 config.json version.txt README.md
+        tar -czvf server-linux-${{ matrix.PLATFORMS }}.tar.gz server-linux-${{ matrix.PLATFORMS }} config.json version.txt README.md
         
-    - name: Upload_ARM64
+    - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: server-linux-arm64.tar.gz
-        path: server-linux-arm64.tar.gz
+        name: server-linux-${{ matrix.PLATFORMS }}.tar.gz
+        path: server-linux-${{ matrix.PLATFORMS }}.tar.gz
+
   Windows_Build:
     runs-on: windows-latest
+    strategy:
+      matrix:
+        PLATFORMS: [amd64, arm64, armhf, i386]
     steps:
     - uses: actions/checkout@v3
 
@@ -57,15 +48,15 @@ jobs:
       with:
         go-version: 1.18
 
-    - name: Build_AMD64
+    - name: Build_Binary
+      run: |
+        CGO_ENABLED=0 GOOS=windows GOARCH=${{ matrix.PLATFORMS }} go build -o server-windows-${{ matrix.PLATFORMS }}.exe -ldflags '-s -w --extldflags "-static -fpic"' ./src/
+    - name: Pack
       run: 
-        go build -o server-win-amd64 ./src
-    - name: Pack_AMD64
-      run: 
-        tar -czvf server-win-amd64.tar.gz server-win-amd64 config.json version.txt README.md
+        tar -czvf server-windows-${{ matrix.PLATFORMS }}.tar.gz server-windows-${{ matrix.PLATFORMS }}.exe config.json version.txt README.md
         
-    - name: Upload_AMD64
+    - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: server-win-amd64.tar.gz
-        path: server-win-amd64.tar.gz
+        name: server-windows-${{ matrix.PLATFORMS }}.tar.gz
+        path: server-windows-${{ matrix.PLATFORMS }}.tar.gz
