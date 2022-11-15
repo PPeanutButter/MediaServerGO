@@ -34,7 +34,7 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: server-linux-${{ matrix.PLATFORMS }}.tar.gz
+        name: server-linux-${{ matrix.PLATFORMS }}
         path: server-linux-${{ matrix.PLATFORMS }}.tar.gz
 
   Windows_Build:
@@ -62,5 +62,5 @@ jobs:
     - name: Upload
       uses: actions/upload-artifact@v3
       with:
-        name: server-windows-${{ matrix.PLATFORMS }}.tar.gz
+        name: server-windows-${{ matrix.PLATFORMS }}
         path: server-windows-${{ matrix.PLATFORMS }}.tar.gz
