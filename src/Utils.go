@@ -63,7 +63,7 @@ func isAllowedPath(_path string, allowed string) bool {
 }
 
 // cache: 改变时才写回
-var bitrateCache = map[string]float64{}
+var bitrateCache map[string]float64 = nil
 
 func timeSeconds(_path string) float64 {
 	var result float64 = -1
