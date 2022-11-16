@@ -22,6 +22,8 @@ import (
 	"time"
 )
 
+const Version = "1.3.1"
+
 func printLogo() {
 	file, e := os.Open("version.txt")
 	if e != nil {
@@ -41,6 +43,7 @@ func printLogo() {
 		}
 		fmt.Println(fmt.Sprintf("\033[1;33m%s\033[0m", string(line)))
 	}
+	fmt.Println(fmt.Sprintf("\033[1;33m        \\/_/                                                          go_build.%s by 花生酱啊\033[0m", Version))
 }
 
 func sendIndexHtml(c *gin.Context) {
