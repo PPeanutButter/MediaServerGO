@@ -15,6 +15,8 @@
 - 🔐`/getVideoPreview`
 - 🔐`/toggleBookmark`
 - 🔐`/getDeviceInfo`
+- 🔐`/uploadAss`
+- 🔐`/downloadSrt`
 # install
 - 解压后配置好config.json后运行`server`即可
 ```json
