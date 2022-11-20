@@ -8,18 +8,18 @@ import (
 func JWTAuth() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		auth := getToken(c)
-		if len(auth) == 0 { //找不到任何token
-			c.Redirect(http.StatusFound, "/login")
-			return
+		if len(auth) != 0 {
+			valid := VerifyToken(auth, config)
+			if valid {
+				c.Next()
+				return
+			}
 		}
-		// 校验token
-		valid := VerifyToken(auth, config)
-		if !valid {
+		if c.FullPath() == "/" {
 			c.Redirect(http.StatusFound, "/login")
-			return
+		} else {
+			c.AbortWithStatus(http.StatusForbidden)
 		}
-		// token有效继续执行其他中间件
-		c.Next()
 	}
 }
 

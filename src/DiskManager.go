@@ -16,6 +16,7 @@ const (
 	Root             = DiskManagerDir
 	PreviewCacheDir  = "_preview_cache_dir"
 	BookmarkCacheDir = "_bookmark_cache_dir"
+	Ass2SrtCacheDir  = "_a2s_cache_dir"
 	BitRateCacheFile = "bit_rate_cache.json"
 )
 
@@ -45,6 +46,9 @@ func NewDiskManager(mountPoints []string) *DiskManager {
 	}
 	if !PathExists(BookmarkCacheDir) {
 		_ = os.MkdirAll(BookmarkCacheDir, 0777)
+	}
+	if !PathExists(Ass2SrtCacheDir) {
+		_ = os.MkdirAll(Ass2SrtCacheDir, 0777)
 	}
 	var diskNames = make([]string, 0, len(mountPoints))
 	for _, mountPoint := range mountPoints {

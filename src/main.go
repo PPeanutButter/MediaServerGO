@@ -120,6 +120,50 @@ func userLogin(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "用户不存在"})
 }
 
+func ass2Srt(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.String(http.StatusBadRequest, "请求失败")
+		return
+	}
+	fileName := file.Filename
+	if err := c.SaveUploadedFile(file, fileName); err != nil {
+		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
+		return
+	}
+	defer func(name string) {
+		err := os.Remove(name)
+		if err != nil {
+			log.Println(err)
+		}
+	}(fileName)
+	cmd := exec.Command("a2s", fileName)
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err = cmd.Run()
+	if err == nil {
+		type T struct {
+			Code  int      `json:"code"`
+			File  string   `json:"file"`
+			Files []string `json:"files"`
+		}
+		var result T
+		err = json.Unmarshal([]byte(out.String()), &result)
+		if err == nil {
+			err := os.Rename(result.File, path.Join(Ass2SrtCacheDir, result.File))
+			if err != nil {
+				c.String(http.StatusBadRequest, "复制转化结果失败 Error:%s", err.Error())
+				return
+			}
+			c.JSON(http.StatusOK, result)
+		} else {
+			c.String(http.StatusBadRequest, "读取结果失败 Error:%s", err.Error())
+		}
+	} else {
+		c.String(http.StatusBadRequest, "调用失败 Error:%s", err.Error())
+	}
+}
+
 func getFileList(c *gin.Context) {
 	_path := c.Query("path")
 	user, errClaims := ParseToken(getToken(c), config)
@@ -308,7 +352,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	authorized := router.Group("/", JWTAuth())
-	router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
+	//router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
 	/* router */
 	router.GET("/login", sendLoginHtml)
 	router.POST("/remote_download", addRemoteDownloadTask)
@@ -325,6 +369,8 @@ func main() {
 	authorized.GET("/getVideoPreview", getVideoPreview)
 	authorized.GET("/toggleBookmark", toggleBookmark)
 	authorized.GET("/getDeviceInfo", getDeviceInfo)
+	router.POST("/uploadAss", ass2Srt)
+	//router.GET("/downloadSrt", ass2Srt)
 	/* router end */
 	if err := router.Run(":" + strconv.Itoa(config.Port)); err != nil {
 		log.Fatal("Starting NAS Failed: ", err)
