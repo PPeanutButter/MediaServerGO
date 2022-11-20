@@ -3,10 +3,10 @@
 
 name: Distribution
 
-on:
-  pull_request:
-    branches: 
-    - "release"
+on:  
+  push:
+    tags:
+      - '*'
 
 jobs:
 
