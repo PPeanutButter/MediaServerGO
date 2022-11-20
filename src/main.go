@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const Version = "1.3.1"
+const Version = "1.3.2"
 
 func printLogo() {
 	file, e := os.Open("version.txt")
@@ -56,16 +56,16 @@ func sendLoginHtml(c *gin.Context) {
 	c.HTML(http.StatusOK, "login.html", nil)
 }
 
-func getFileCore(c *gin.Context, _path string) {
-	if isAllowedPath(_path, Root) {
-		c.FileAttachment(_path, path.Base(_path))
+func getFileCore(c *gin.Context, parent string, relative string) {
+	if isAllowedPath(path.Join(parent, relative), parent) {
+		c.FileAttachment(path.Join(parent, relative), path.Base(relative))
 	} else {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
 }
 
 func getFile(c *gin.Context) {
-	getFileCore(c, path.Join(Root, c.Query("path")))
+	getFileCore(c, Root, c.Query("path"))
 }
 
 func getFileV2(c *gin.Context) {
@@ -73,7 +73,21 @@ func getFileV2(c *gin.Context) {
 	if err != nil {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
-	getFileCore(c, path.Join(Root, string(decoded)))
+	getFileCore(c, Root, string(decoded))
+}
+
+func getConvertedSrt(c *gin.Context) {
+	decoded, err := base64.URLEncoding.DecodeString(c.Query("path"))
+	if err != nil {
+		c.AbortWithStatus(http.StatusForbidden)
+	}
+	getFileCore(c, Ass2SrtCacheDir, string(decoded))
+	defer func(name string) {
+		err := os.Remove(name)
+		if err != nil {
+			log.Println(err)
+		}
+	}(path.Join(Ass2SrtCacheDir, string(decoded)))
 }
 
 func getAssets(c *gin.Context) {
@@ -369,8 +383,8 @@ func main() {
 	authorized.GET("/getVideoPreview", getVideoPreview)
 	authorized.GET("/toggleBookmark", toggleBookmark)
 	authorized.GET("/getDeviceInfo", getDeviceInfo)
-	router.POST("/uploadAss", ass2Srt)
-	//router.GET("/downloadSrt", ass2Srt)
+	authorized.POST("/uploadAss", ass2Srt)
+	authorized.GET("/downloadSrt", getConvertedSrt)
 	/* router end */
 	if err := router.Run(":" + strconv.Itoa(config.Port)); err != nil {
 		log.Fatal("Starting NAS Failed: ", err)
