@@ -366,7 +366,7 @@ func main() {
 	gin.SetMode(gin.ReleaseMode)
 	router := gin.Default()
 	authorized := router.Group("/", JWTAuth())
-	//router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
+	router.LoadHTMLFiles(config.WebPath+"/index.html", config.WebPath+"/login.html")
 	/* router */
 	router.GET("/login", sendLoginHtml)
 	router.POST("/remote_download", addRemoteDownloadTask)
