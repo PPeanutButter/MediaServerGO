@@ -3,7 +3,8 @@
 
 name: Distribution
 
-on:  
+on:
+  workflow_dispatch:
   push:
     tags:
       - '*'
