@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const Version = "1.3.2"
+const Version = "1.3.3"
 
 func printLogo() {
 	file, e := os.Open("version.txt")
@@ -82,12 +82,12 @@ func getConvertedSrt(c *gin.Context) {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
 	getFileCore(c, Ass2SrtCacheDir, string(decoded))
-	defer func(name string) {
-		err := os.Remove(name)
-		if err != nil {
-			log.Println(err)
-		}
-	}(path.Join(Ass2SrtCacheDir, string(decoded)))
+	//defer func(name string) {
+	//	err := os.Remove(name)
+	//	if err != nil {
+	//		log.Println(err)
+	//	}
+	//}(path.Join(Ass2SrtCacheDir, string(decoded)))
 }
 
 func getAssets(c *gin.Context) {
