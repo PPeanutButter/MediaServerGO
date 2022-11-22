@@ -35,7 +35,7 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: github.ref
+        tag_name: ${{ github.ref }}
         files:
           server-linux-${{ matrix.PLATFORMS }}.tar.gz
 
@@ -63,6 +63,6 @@ jobs:
     - name: Release
       uses: softprops/action-gh-release@v1
       with:
-        tag_name: github.ref
+        tag_name: ${{ github.ref }}
         files:
           server-windows-${{ matrix.PLATFORMS }}.tar.gz
