@@ -34,8 +34,8 @@ jobs:
         
     - name: Release
       uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        tag_name: ${{ github.ref }}
         files:
           server-linux-${{ matrix.PLATFORMS }}.tar.gz
 
@@ -62,7 +62,7 @@ jobs:
         tar -czvf server-windows-${{ matrix.PLATFORMS }}.tar.gz server-windows-${{ matrix.PLATFORMS }}.exe config.json version.txt README.md
     - name: Release
       uses: softprops/action-gh-release@v1
+      if: startsWith(github.ref, 'refs/tags/')
       with:
-        tag_name: ${{ github.ref }}
         files:
           server-windows-${{ matrix.PLATFORMS }}.tar.gz
