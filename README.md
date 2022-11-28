@@ -1,22 +1,22 @@
 # MediaServerGO
 - 🎉Linux、Windows
 # api
-- `/login`
-- `/remote_download`
-- `/getAssets`
-- `/userLogin`
-- `/remote_download`
-- 🔐`/`
-- 🔐`/getDeviceName`
-- 🔐`/getFileList`
-- 🔐`/getCover`
-- 🔐`/getFile/:name`
-- 🔐`/getFile2/:name`
-- 🔐`/getVideoPreview`
-- 🔐`/toggleBookmark`
-- 🔐`/getDeviceInfo`
-- 🔐`/uploadAss`
-- 🔐`/downloadSrt`
+- `/login`：登录网页
+- `/remote_download`：添加下载到本地的Aria2上(localhost:6800)
+- `/getAssets`：登录网页的一些js、css资源
+- `/userLogin`：用户登录接口
+- 🔐`/`：主页
+- 🔐`/getDeviceName`：获取服务器设备名，用于网页标题
+- 🔐`/getFileList`：获取文件列表
+- 🔐`/getCover`：获取剧集封面
+- 🔐`/getFile/:name`：在线观看接口，文件路径用URL编码
+- 🔐`/getFile2/:name`：在线观看接口，文件路径用URL-Base64编码
+- 🔐`/getVideoPreview`：获取视频预览图（5s时的视频截图）
+- 🔐`/toggleBookmark`：标记是否已观看
+- 🔐`/getDeviceInfo`：获取服务器状态（温度、风扇转速等）
+- 🔐`/uploadAss`：转换上传的ass字幕或包含ass的压缩包（支持zip、7z、rar）为srt字幕
+- 🔐`/downloadSrt`：下载转换后的srt字幕
+
 # install
 - 解压后配置好config.json后运行`server`即可
 ```json
