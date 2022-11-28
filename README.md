@@ -1,3 +1,4 @@
+![](function-preview.png)
 # MediaServerGO
 - 🎉Linux、Windows
 # api
