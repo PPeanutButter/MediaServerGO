@@ -379,6 +379,8 @@ func main() {
 	authorized.GET("/getFileList", getFileList)
 	authorized.GET("/getCover", getCover)
 	authorized.GET("/getFile/:name", getFile)
+	authorized.HEAD("/getFile/:name", getFile)
+	authorized.HEAD("/getFile2/:name", getFileV2)
 	authorized.GET("/getFile2/:name", getFileV2)
 	authorized.GET("/getVideoPreview", getVideoPreview)
 	authorized.GET("/toggleBookmark", toggleBookmark)
