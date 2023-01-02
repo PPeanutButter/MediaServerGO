@@ -236,6 +236,7 @@ func addRemoteDownloadTask(c *gin.Context) {
 func getVideoPreview(c *gin.Context) {
 	_path := c.Query("path")
 	previewFile := path.Join(PreviewCacheDir, path.Base(_path)+".jpg")
+	// 双重检查法
 	if !PathExists(previewFile) {
 		err := videoPreviewLock.Acquire(context.Background(), 1)
 		defer videoPreviewLock.Release(1)
@@ -244,20 +245,22 @@ func getVideoPreview(c *gin.Context) {
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
-		cmd := exec.Command("ffmpeg",
-			"-i", path.Join(Root, _path),
-			"-ss", "00:00:05.000",
-			"-vframes", "1",
-			previewFile,
-		)
-		var out bytes.Buffer
-		cmd.Stderr = &out
-		err = cmd.Run()
-		if err != nil {
-			log.Println("getVideoPreview", "调用ffmpeg失败")
-			log.Println(out.String())
-			c.AbortWithStatus(http.StatusServiceUnavailable)
-			return
+		if !PathExists(previewFile) {
+			cmd := exec.Command("ffmpeg",
+				"-i", path.Join(Root, _path),
+				"-ss", "00:00:05.000",
+				"-vframes", "1",
+				previewFile,
+			)
+			var out bytes.Buffer
+			cmd.Stderr = &out
+			err = cmd.Run()
+			if err != nil {
+				log.Println("getVideoPreview", "调用ffmpeg失败")
+				log.Println(out.String())
+				c.AbortWithStatus(http.StatusServiceUnavailable)
+				return
+			}
 		}
 	}
 	if isAllowedPath(previewFile, PreviewCacheDir) {
