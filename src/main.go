@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -244,13 +243,33 @@ func getVideoPreview(c *gin.Context) {
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
-		cmd := exec.Command("ffmpeg", "-i", path.Join(Root, _path), "-vf", "\"select=gt(scene\\,0.5)\"",
-			"-frames:v", "1", "-vsync", "vfr", previewFile)
-		var out bytes.Buffer
-		cmd.Stdout = &out
-		err = cmd.Run()
+		result, err := readStringFromCmd(exec.Command("ffmpeg",
+			"-i", path.Join(Root, _path),
+			"-vf", "\"select=gt(scene\\,0.5)\"",
+			"-frames:v", "1",
+			"-vsync", "vfr",
+			previewFile,
+		))
 		if err != nil {
-			log.Println("getVideoPreview", "调用ffmpeg失败", cmd.String())
+			log.Println("getVideoPreview", "调用ffmpeg失败", "错误日志已保存")
+			go func() {
+				filePath := "err.log"
+				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND|os.O_SYNC, 0777)
+				if err != nil {
+					fmt.Println("文件打开失败", err)
+				}
+				//及时关闭file句柄
+				defer func(file *os.File) {
+					_ = file.Close()
+				}(file)
+				//写入文件时，使用带缓存的 *Writer
+				write := bufio.NewWriter(file)
+				for i := 0; i < 5; i++ {
+					_, _ = write.WriteString(result)
+				}
+				//Flush将缓存的文件真正写入到文件中
+				_ = write.Flush()
+			}()
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}

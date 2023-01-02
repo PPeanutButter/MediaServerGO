@@ -154,5 +154,5 @@ func readStringFromCmd(cmd *exec.Cmd) (string, error) {
 	if err == nil {
 		return out.String(), nil
 	}
-	return "", err
+	return out.String(), err
 }
