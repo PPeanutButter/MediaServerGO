@@ -254,9 +254,9 @@ func getVideoPreview(c *gin.Context) {
 			log.Println("getVideoPreview", "调用ffmpeg失败", "错误日志已保存")
 			go func() {
 				filePath := "err.log"
-				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND|os.O_SYNC, 0777)
+				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0777)
 				if err != nil {
-					fmt.Println("文件打开失败", err)
+					log.Println("文件打开失败", err)
 				}
 				//及时关闭file句柄
 				defer func(file *os.File) {
