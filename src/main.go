@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const Version = "1.3.5-alpha"
+const Version = "1.3.6"
 
 func printLogo() {
 	file, e := os.Open("version.txt")
