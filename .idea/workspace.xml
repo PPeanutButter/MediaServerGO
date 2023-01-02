@@ -5,9 +5,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完成计算最大可用磁盘">
+      <change afterPath="$PROJECT_DIR$/src/a2s.go" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/change_detection.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Config.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Config.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/JWTUtils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/JWTUtils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
     </list>
@@ -23,7 +25,7 @@
       </list>
     </option>
   </component>
-  <component name="GOROOT" url="file://D:/Program Files/Go" />
+  <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.19.4" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -56,9 +58,12 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;WebServerToolWindowFactoryState&quot;: &quot;false&quot;,
     &quot;go.import.settings.migrated&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;F:/MediaServerGo&quot;,
+    &quot;go.sdk.automatically.set&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/panru/Documents/MediaServerGO&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;settings.editor.selected.configurable&quot;: &quot;editor.preferences.fonts.default&quot;
+    &quot;settings.editor.selected.configurable&quot;: &quot;preferences.pluginManager&quot;
   }
 }</component>
   <component name="RecentsManager">
@@ -72,6 +77,15 @@
     </key>
   </component>
   <component name="RunManager">
+    <configuration default="true" type="GoApplicationRunConfiguration" factoryName="Go Application">
+      <module name="MediaServerGo" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="FILE" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <method v="2" />
+    </configuration>
     <configuration name="go build MediaServerGo/src" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true" nameIsGenerated="true">
       <module name="MediaServerGo" />
       <working_directory value="$PROJECT_DIR$" />
@@ -79,6 +93,16 @@
       <package value="MediaServerGo/src" />
       <directory value="$PROJECT_DIR$" />
       <filePath value="$PROJECT_DIR$/src/main.go" />
+      <method v="2" />
+    </configuration>
+    <configuration default="true" type="GoTestRunConfiguration" factoryName="Go Test">
+      <module name="MediaServerGo" />
+      <working_directory value="$PROJECT_DIR$" />
+      <go_parameters value="-i" />
+      <kind value="DIRECTORY" />
+      <directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$" />
+      <framework value="gotest" />
       <method v="2" />
     </configuration>
     <recent_temporary>

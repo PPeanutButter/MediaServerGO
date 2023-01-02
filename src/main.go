@@ -43,7 +43,8 @@ func printLogo() {
 		}
 		fmt.Println(fmt.Sprintf("\033[1;33m%s\033[0m", string(line)))
 	}
-	fmt.Println(fmt.Sprintf("\033[1;33m        \\/_/                                                          go_build.%s by 花生酱啊\033[0m", Version))
+	fmt.Println(fmt.Sprintf("\033[1;33m        \\/_/   "+
+		"                                                       go_build.%s by 花生酱啊\033[0m", Version))
 }
 
 func sendIndexHtml(c *gin.Context) {
@@ -74,20 +75,6 @@ func getFileV2(c *gin.Context) {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
 	getFileCore(c, Root, string(decoded))
-}
-
-func getConvertedSrt(c *gin.Context) {
-	decoded, err := base64.URLEncoding.DecodeString(c.Query("path"))
-	if err != nil {
-		c.AbortWithStatus(http.StatusForbidden)
-	}
-	getFileCore(c, Ass2SrtCacheDir, string(decoded))
-	//defer func(name string) {
-	//	err := os.Remove(name)
-	//	if err != nil {
-	//		log.Println(err)
-	//	}
-	//}(path.Join(Ass2SrtCacheDir, string(decoded)))
 }
 
 func getAssets(c *gin.Context) {
@@ -132,50 +119,6 @@ func userLogin(c *gin.Context) {
 		}
 	}
 	c.JSON(http.StatusOK, gin.H{"code": -1, "msg": "用户不存在"})
-}
-
-func ass2Srt(c *gin.Context) {
-	file, err := c.FormFile("file")
-	if err != nil {
-		c.String(http.StatusBadRequest, "请求失败")
-		return
-	}
-	fileName := file.Filename
-	if err := c.SaveUploadedFile(file, fileName); err != nil {
-		c.String(http.StatusBadRequest, "保存失败 Error:%s", err.Error())
-		return
-	}
-	defer func(name string) {
-		err := os.Remove(name)
-		if err != nil {
-			log.Println(err)
-		}
-	}(fileName)
-	cmd := exec.Command("a2s", fileName)
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	err = cmd.Run()
-	if err == nil {
-		type T struct {
-			Code  int      `json:"code"`
-			File  string   `json:"file"`
-			Files []string `json:"files"`
-		}
-		var result T
-		err = json.Unmarshal([]byte(out.String()), &result)
-		if err == nil {
-			err := os.Rename(result.File, path.Join(Ass2SrtCacheDir, result.File))
-			if err != nil {
-				c.String(http.StatusBadRequest, "复制转化结果失败 Error:%s", err.Error())
-				return
-			}
-			c.JSON(http.StatusOK, result)
-		} else {
-			c.String(http.StatusBadRequest, "读取结果失败 Error:%s", err.Error())
-		}
-	} else {
-		c.String(http.StatusBadRequest, "调用失败 Error:%s", err.Error())
-	}
 }
 
 func getFileList(c *gin.Context) {
@@ -301,12 +244,8 @@ func getVideoPreview(c *gin.Context) {
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
-		cmd := exec.Command("ffmpeg",
-			"-i", path.Join(Root, _path), "-ss",
-			"00:00:05.000", "-vframes",
-			"1",
-			previewFile,
-		)
+		cmd := exec.Command("ffmpeg", "-i", path.Join(Root, _path), "-vf", "\"select=gt(scene\\,0.5)\"",
+			"-frames:v", "1", "-vsync", "vfr", previewFile)
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		err = cmd.Run()
@@ -347,6 +286,10 @@ func toggleBookmark(c *gin.Context) {
 	}
 }
 
+func NotImplement(c *gin.Context) {
+	c.String(http.StatusOK, "NotImplementYet, Please visit later.")
+}
+
 // todo
 func getDeviceInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
@@ -385,8 +328,19 @@ func main() {
 	authorized.GET("/getVideoPreview", getVideoPreview)
 	authorized.GET("/toggleBookmark", toggleBookmark)
 	authorized.GET("/getDeviceInfo", getDeviceInfo)
-	authorized.POST("/uploadAss", ass2Srt)
-	authorized.GET("/downloadSrt", getConvertedSrt)
+	authorized.POST("/uploadAss", uploadAss)
+	authorized.GET("/downloadSrt", downloadSrt)
+	/* a2s router */
+	a2s := authorized.Group("/a2s")
+	a2s.POST("/uploadAss", uploadAss)
+	a2s.GET("/downloadSrt", downloadSrt)
+	/* change_detection router */
+	cd := authorized.Group("/change_detection", withUser("pan"))
+	cd.GET("/getTasks", getTasks)
+	cd.GET("/getRecords", getRecords)
+	cd.GET("/getConfigurations", getConfigurations)
+	cd.POST("/postTasks", NotImplement)
+	cd.GET("/runOnce", runOnce)
 	/* router end */
 	if err := router.Run(":" + strconv.Itoa(config.Port)); err != nil {
 		log.Fatal("Starting NAS Failed: ", err)

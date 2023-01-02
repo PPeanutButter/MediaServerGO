@@ -2,8 +2,10 @@ package main
 
 import (
 	"github.com/cristalhq/jwt/v4"
+	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
 	"log"
+	"net/http"
 	"time"
 )
 
@@ -66,4 +68,18 @@ func ParseToken(tokenString string, cfg Config) (*MyClaims, error) {
 		return nil, err
 	}
 	return &newClaims, nil
+}
+
+func withUser(user string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		auth := getToken(c)
+		if len(auth) != 0 {
+			body, err := ParseToken(auth, config)
+			if err != nil && body.UserName == user {
+				c.Next()
+				return
+			}
+		}
+		c.AbortWithStatus(http.StatusForbidden)
+	}
 }

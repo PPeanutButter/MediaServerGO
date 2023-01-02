@@ -146,3 +146,13 @@ func ToCamelCase(s string) string {
 	s = strings.ReplaceAll(s, ".", " ")
 	return cases.Title(language.Und).String(s)
 }
+
+func readStringFromCmd(cmd *exec.Cmd) (string, error) {
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	err := cmd.Run()
+	if err == nil {
+		return out.String(), nil
+	}
+	return "", err
+}
