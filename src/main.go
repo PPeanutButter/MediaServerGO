@@ -251,7 +251,7 @@ func getVideoPreview(c *gin.Context) {
 			previewFile,
 		))
 		if err != nil {
-			log.Println("getVideoPreview", "调用ffmpeg失败", "错误日志已保存")
+			log.Println("getVideoPreview", "调用ffmpeg失败", result)
 			go func() {
 				filePath := "err.log"
 				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0777)
@@ -264,9 +264,8 @@ func getVideoPreview(c *gin.Context) {
 				}(file)
 				//写入文件时，使用带缓存的 *Writer
 				write := bufio.NewWriter(file)
-				for i := 0; i < 5; i++ {
-					_, _ = write.WriteString(result)
-				}
+				_, _ = write.WriteString("调用ffmpeg失败")
+				_, _ = write.WriteString(result)
 				//Flush将缓存的文件真正写入到文件中
 				_ = write.Flush()
 			}()
