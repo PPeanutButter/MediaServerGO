@@ -243,31 +243,19 @@ func getVideoPreview(c *gin.Context) {
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
-		result, err := readStringFromCmd(exec.Command("ffmpeg",
-			"-i", path.Join(Root, _path),
-			"-vf", "select=gt(scene\\,0.5)",
-			"-frames:v", "1",
-			"-vsync", "vfr",
-			previewFile))
+		//err := exec.Command("ffmpeg",
+		//	"-i", path.Join(Root, _path),
+		//	"-vf", "select=gt(scene\\,0.5)",
+		//	"-frames:v", "1",
+		//	"-vsync", "vfr",
+		//	previewFile)
+		cmd := exec.Command("ffmpeg",
+			"-i", path.Join(Root, _path), "-frames:v", "1",
+			previewFile,
+		)
+		err = cmd.Run()
 		if err != nil {
-			log.Println("getVideoPreview", "调用ffmpeg失败", result)
-			go func() {
-				filePath := "err.log"
-				file, err := os.OpenFile(filePath, os.O_WRONLY|os.O_APPEND, 0777)
-				if err != nil {
-					log.Println("文件打开失败", err)
-				}
-				//及时关闭file句柄
-				defer func(file *os.File) {
-					_ = file.Close()
-				}(file)
-				//写入文件时，使用带缓存的 *Writer
-				write := bufio.NewWriter(file)
-				_, _ = write.WriteString("调用ffmpeg失败")
-				_, _ = write.WriteString(result)
-				//Flush将缓存的文件真正写入到文件中
-				_ = write.Flush()
-			}()
+			log.Println("getVideoPreview", "调用ffmpeg失败", err)
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
@@ -321,8 +309,6 @@ var videoPreviewLock = semaphore.NewWeighted(4)
 
 func main() {
 	printLogo()
-	result, _ := readStringFromCmd(exec.Command("ffmpeg"))
-	log.Println(result)
 	config = *newConfig("config.json")
 	diskManager = *NewDiskManager(config.MountPoints)
 	gin.SetMode(gin.ReleaseMode)
