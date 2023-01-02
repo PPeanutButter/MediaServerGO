@@ -246,10 +246,10 @@ func getVideoPreview(c *gin.Context) {
 		}
 		cmd := exec.Command("ffmpeg",
 			"-i", path.Join(Root, _path),
-			"-vf", "select=gt(scene\\,0.5)",
-			"-frames:v", "1",
-			"-vsync", "vfr",
-			previewFile)
+			"-ss", "00:00:05.000",
+			"-vframes", "1",
+			previewFile,
+		)
 		var out bytes.Buffer
 		cmd.Stderr = &out
 		err = cmd.Run()
