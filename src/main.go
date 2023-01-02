@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/base64"
 	"fmt"
@@ -243,19 +244,18 @@ func getVideoPreview(c *gin.Context) {
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
-		//err := exec.Command("ffmpeg",
-		//	"-i", path.Join(Root, _path),
-		//	"-vf", "select=gt(scene\\,0.5)",
-		//	"-frames:v", "1",
-		//	"-vsync", "vfr",
-		//	previewFile)
 		cmd := exec.Command("ffmpeg",
-			"-i", path.Join(Root, _path), "-frames:v", "1",
-			previewFile,
-		)
+			"-i", path.Join(Root, _path),
+			"-vf", "select=gt(scene\\,0.5)",
+			"-frames:v", "1",
+			"-vsync", "vfr",
+			previewFile)
+		var out bytes.Buffer
+		cmd.Stderr = &out
 		err = cmd.Run()
 		if err != nil {
-			log.Println("getVideoPreview", "调用ffmpeg失败", err)
+			log.Println("getVideoPreview", "调用ffmpeg失败")
+			log.Println(out.String())
 			c.AbortWithStatus(http.StatusServiceUnavailable)
 			return
 		}
