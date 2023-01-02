@@ -245,11 +245,10 @@ func getVideoPreview(c *gin.Context) {
 		}
 		result, err := readStringFromCmd(exec.Command("ffmpeg",
 			"-i", path.Join(Root, _path),
-			"-vf", "\"select=gt(scene\\,0.5)\"",
+			"-vf", "select=gt(scene\\,0.5)",
 			"-frames:v", "1",
 			"-vsync", "vfr",
-			previewFile,
-		))
+			previewFile))
 		if err != nil {
 			log.Println("getVideoPreview", "调用ffmpeg失败", result)
 			go func() {
@@ -322,6 +321,8 @@ var videoPreviewLock = semaphore.NewWeighted(4)
 
 func main() {
 	printLogo()
+	result, _ := readStringFromCmd(exec.Command("ffmpeg"))
+	log.Println(result)
 	config = *newConfig("config.json")
 	diskManager = *NewDiskManager(config.MountPoints)
 	gin.SetMode(gin.ReleaseMode)
