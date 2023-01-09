@@ -142,6 +142,15 @@ func getSeasonName(_path string) (string, bool) {
 	return "", false
 }
 
+func getMovieName(_path string) (string, bool) {
+	var re = regexp.MustCompile(`(?mi)(.*)\.(18|19|20)\d{2}\.`)
+	match := re.FindStringSubmatch(_path)
+	if match != nil {
+		return ToCamelCase(match[1]), true
+	}
+	return "", false
+}
+
 func ToCamelCase(s string) string {
 	s = strings.ReplaceAll(s, ".", " ")
 	return cases.Title(language.Und).String(s)

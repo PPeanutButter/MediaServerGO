@@ -217,7 +217,10 @@ func addRemoteDownloadTask(c *gin.Context) {
 	url := c.PostForm("url")
 	seasonName, ok := getSeasonName(out)
 	if !ok {
-		seasonName = "Download"
+		seasonName, ok = getMovieName(out)
+		if !ok {
+			seasonName = "Download"
+		}
 	}
 	dir, _ := filepath.Abs(path.Join(Root, diskManager.getMaxAvailableDisk(seasonName), seasonName))
 	g, err := jsonRPC.AddURI([]string{url}, gin.H{
@@ -336,12 +339,11 @@ func main() {
 	authorized.GET("/getVideoPreview", getVideoPreview)
 	authorized.GET("/toggleBookmark", toggleBookmark)
 	authorized.GET("/getDeviceInfo", getDeviceInfo)
-	authorized.POST("/uploadAss", uploadAss)
-	authorized.GET("/downloadSrt", downloadSrt)
 	/* a2s router */
 	a2s := authorized.Group("/a2s")
 	a2s.POST("/uploadAss", uploadAss)
 	a2s.GET("/downloadSrt", downloadSrt)
+	a2s.HEAD("/downloadSrt", downloadSrt)
 	/* change_detection router */
 	cd := authorized.Group("/change_detection", withUser("pan"))
 	cd.GET("/getTasks", getTasks)

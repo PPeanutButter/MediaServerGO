@@ -4,12 +4,8 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="完成计算最大可用磁盘">
-      <change afterPath="$PROJECT_DIR$/src/a2s.go" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/change_detection.go" afterDir="false" />
+    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="优化预览图锁机制">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/config.json" beforeDir="false" afterPath="$PROJECT_DIR$/config.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/JWTUtils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/JWTUtils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
     </list>
@@ -28,6 +24,8 @@
   <component name="GOROOT" url="file://$USER_HOME$/sdk/go1.19.4" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RESET_MODE" value="HARD" />
+    <option name="UPDATE_TYPE" value="REBASE" />
   </component>
   <component name="HighlightingSettingsPerFile">
     <setting file="file://$PROJECT_DIR$/config.json" root0="FORCE_HIGHLIGHTING" />
@@ -165,10 +163,22 @@
     <MESSAGE value="优化错误显示" />
     <MESSAGE value="修复无法创建缓存的bug" />
     <MESSAGE value="完成计算最大可用磁盘" />
-    <option name="LAST_COMMIT_MESSAGE" value="完成计算最大可用磁盘" />
+    <MESSAGE value="优化预览图锁机制" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化预览图锁机制" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
+          <url>file://$PROJECT_DIR$/src/Utils.go</url>
+          <line>147</line>
+          <option name="timeStamp" value="1" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />
