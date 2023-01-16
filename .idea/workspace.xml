@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="ALL" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="优化预览图锁机制">
+    <list default="true" id="511318ea-f1ff-4a49-8266-636e4ec57a5e" name="Changes" comment="优化电视剧的正则匹配">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Utils.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/Utils.go" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.go" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.go" afterDir="false" />
@@ -164,21 +164,12 @@
     <MESSAGE value="修复无法创建缓存的bug" />
     <MESSAGE value="完成计算最大可用磁盘" />
     <MESSAGE value="优化预览图锁机制" />
-    <option name="LAST_COMMIT_MESSAGE" value="优化预览图锁机制" />
+    <MESSAGE value="新增电影的正则匹配" />
+    <MESSAGE value="优化电视剧的正则匹配" />
+    <option name="LAST_COMMIT_MESSAGE" value="优化电视剧的正则匹配" />
   </component>
   <component name="VgoProject">
     <settings-migrated>true</settings-migrated>
-  </component>
-  <component name="XDebuggerManager">
-    <breakpoint-manager>
-      <breakpoints>
-        <line-breakpoint enabled="true" type="DlvLineBreakpoint">
-          <url>file://$PROJECT_DIR$/src/Utils.go</url>
-          <line>147</line>
-          <option name="timeStamp" value="1" />
-        </line-breakpoint>
-      </breakpoints>
-    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

@@ -166,3 +166,11 @@ func readStringFromCmd(cmd *exec.Cmd) (string, error) {
 	}
 	return out.String(), err
 }
+
+func readStringFromCmdWithoutError(cmd *exec.Cmd) string {
+	result, err := readStringFromCmd(cmd)
+	if err == nil {
+		return result
+	}
+	return ""
+}

@@ -127,6 +127,16 @@ func getFileList(c *gin.Context) {
 	if errClaims != nil {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
+	if _path == "/" {
+		for _, disk := range diskManager.MountPoints {
+			go func(diskRoot string) {
+				err := os.WriteFile(path.Join(diskRoot, ".wake"), []byte{0}, 0777)
+				if err != nil {
+					fmt.Printf("文件打开失败=%v\n", err)
+				}
+			}(disk)
+		}
+	}
 	dirs, err := diskManager.listDir(_path)
 	if err != nil {
 		c.AbortWithStatus(http.StatusForbidden)
@@ -304,8 +314,11 @@ func NotImplement(c *gin.Context) {
 // todo
 func getDeviceInfo(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
-		"temp": 39.9,
-		"fan":  true,
+		"temp":     -1,
+		"cpu_temp": readStringFromCmdWithoutError(exec.Command("cat", "/sys/class/thermal/thermal_zone0/temp")),
+		"fan":      true,
+		"freq_max": readStringFromCmdWithoutError(exec.Command("cat", "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq")),
+		"freq_cur": readStringFromCmdWithoutError(exec.Command("cat", "/sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_cur_freq")),
 	})
 }
 
