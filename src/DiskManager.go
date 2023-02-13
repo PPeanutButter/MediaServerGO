@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 )
 
-var DiskWeight = []uint64{2, 2, 1, 1}
+var DiskWeight = []uint64{1, 1, 1, 1}
 
 const (
 	DiskManagerDir   = "_disk_manager_dir"
