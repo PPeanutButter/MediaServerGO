@@ -22,7 +22,7 @@ import (
 	"time"
 )
 
-const Version = "1.3.7"
+const Version = "1.3.8"
 
 func printLogo() {
 	file, e := os.Open("version.txt")
@@ -128,14 +128,18 @@ func getFileList(c *gin.Context) {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
 	if _path == "/" {
-		for _, disk := range diskManager.MountPoints {
-			go func(diskRoot string) {
-				err := os.WriteFile(path.Join(diskRoot, ".wake"), []byte{0}, 0777)
-				if err != nil {
-					fmt.Printf("文件打开失败=%v\n", err)
-				}
-			}(disk)
-		}
+		//异步唤醒全部磁盘，按顺序唤醒防止启动瞬间电流过大
+		go func() {
+			for _, disk := range diskManager.MountPoints {
+				go func(diskRoot string) {
+					err := os.WriteFile(path.Join(diskRoot, ".wake"), []byte{0}, 0777)
+					if err != nil {
+						fmt.Printf("文件打开失败=%v\n", err)
+					}
+				}(disk)
+				time.Sleep(time.Duration(500) * time.Millisecond)
+			}
+		}()
 	}
 	dirs, err := diskManager.listDir(_path)
 	if err != nil {
@@ -156,6 +160,13 @@ func getFileList(c *gin.Context) {
 			continue
 		}
 		if file.IsDir() {
+			if PathExists(path.Join(Root, dir, ".allow")) {
+				var allowUser []string
+				_ = json.Unmarshal(readBytes(path.Join(Root, dir, ".allow")), &allowUser)
+				if !in(user.UserName, allowUser) {
+					continue
+				}
+			}
 			fType = "Directory"
 			innerDirs, _ := os.ReadDir(path.Join(Root, dir))
 			for _, innerDir := range innerDirs {
