@@ -236,6 +236,7 @@ func addRemoteDownloadTask(c *gin.Context) {
 	}(jsonRPC)
 	out := c.PostForm("out")
 	url := c.PostForm("url")
+	urls, isUrls := c.GetPostFormArray("urls")
 	seasonName, ok := getSeasonName(out)
 	if !ok {
 		seasonName, ok = getMovieName(out)
@@ -244,7 +245,13 @@ func addRemoteDownloadTask(c *gin.Context) {
 		}
 	}
 	dir, _ := filepath.Abs(path.Join(Root, diskManager.getMaxAvailableDisk(seasonName), seasonName))
-	g, err := jsonRPC.AddURI([]string{url}, gin.H{
+	var avaUrls []string
+	if isUrls {
+		avaUrls = urls
+	} else {
+		avaUrls = []string{url}
+	}
+	g, err := jsonRPC.AddURI(avaUrls, gin.H{
 		"out":    out,
 		"dir":    dir,
 		"header": "User-Agent:" + config.Aria2.UA + "\nAccept-Encoding:identity\nConnection:Keep-Alive",
