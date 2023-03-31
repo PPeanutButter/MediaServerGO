@@ -23,7 +23,8 @@ jobs:
       run: echo ::set-output name=VERSION::${GITHUB_REF/refs\/tags\//}
       
     - name: set version
-      run: cat src/version.go && echo "package main\nconst Version = \"${{ steps.get_version.outputs.VERSION }}\"" > src/version.go && cat src/version.go
+      run: cat src/version.go && echo "package main
+const Version = \"${{ steps.get_version.outputs.VERSION }}\"" > src/version.go && cat src/version.go
 
     - name: Set up Go
       uses: actions/setup-go@v3
