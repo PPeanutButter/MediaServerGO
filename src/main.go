@@ -22,8 +22,6 @@ import (
 	"time"
 )
 
-const Version = "1.3.8"
-
 func printLogo() {
 	file, e := os.Open("version.txt")
 	if e != nil {
