@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/goccy/go-json"
-	"github.com/zyxar/argo/rpc"
 	"golang.org/x/sync/semaphore"
 	"io"
 	"log"
@@ -223,15 +222,6 @@ func getDeviceName(c *gin.Context) {
 }
 
 func addRemoteDownloadTask(c *gin.Context) {
-	jsonRPC, err := rpc.New(context.Background(), config.Aria2.RPC, config.Aria2.Token, time.Second*10, &rpc.DummyNotifier{})
-	if err != nil {
-		log.Println("addRemoteDownloadTask", "连接Aria2失败", err)
-		c.AbortWithStatus(http.StatusServiceUnavailable)
-		return
-	}
-	defer func(jsonRPC rpc.Client) {
-		_ = jsonRPC.Close()
-	}(jsonRPC)
 	out := c.PostForm("out")
 	url := c.PostForm("url")
 	urls, isUrls := c.GetPostFormArray("urls")
@@ -249,11 +239,13 @@ func addRemoteDownloadTask(c *gin.Context) {
 	} else {
 		avaUrls = []string{url}
 	}
-	g, err := jsonRPC.AddURI(avaUrls, gin.H{
-		"out":    out,
-		"dir":    dir,
-		"header": "User-Agent:" + config.Aria2.UA + "\nAccept-Encoding:identity\nConnection:Keep-Alive",
-	})
+	task := make(map[string]any)
+	task["id"] = time.Now().String()
+	task["urls"] = avaUrls
+	task["name"] = out
+	task["path"] = dir
+	bytesData, _ := json.Marshal(task)
+	g, err := http.Post("http://localhost:6900/addUrls", "application/json;charset=utf-8", bytes.NewBuffer(bytesData))
 	if err != nil {
 		log.Println("addRemoteDownloadTask", "提交任务失败", err)
 		c.AbortWithStatus(http.StatusServiceUnavailable)
