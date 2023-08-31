@@ -11,7 +11,6 @@ import (
 	"golang.org/x/sync/semaphore"
 	"io"
 	"log"
-	"math/rand"
 	"net/http"
 	"os"
 	"os/exec"
@@ -241,7 +240,7 @@ func addRemoteDownloadTask(c *gin.Context) {
 		avaUrls = []string{url}
 	}
 	task := make(map[string]any)
-	task["id"] = time.Now().UnixNano() + rand.Int63()
+	task["id"] = time.Now().UnixNano()
 	task["urls"] = avaUrls
 	task["name"] = out
 	task["path"] = dir
