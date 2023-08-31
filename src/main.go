@@ -240,7 +240,7 @@ func addRemoteDownloadTask(c *gin.Context) {
 		avaUrls = []string{url}
 	}
 	task := make(map[string]any)
-	task["id"] = time.Now().UnixNano()
+	task["id"] = fmt.Sprintf("%v", time.Now().UnixNano())
 	task["urls"] = avaUrls
 	task["name"] = out
 	task["path"] = dir
