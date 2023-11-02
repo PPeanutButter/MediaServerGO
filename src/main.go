@@ -224,6 +224,7 @@ func getDeviceName(c *gin.Context) {
 func addRemoteDownloadTask(c *gin.Context) {
 	out := c.PostForm("out")
 	url := c.PostForm("url")
+	xunlei := c.PostForm("xunlei")
 	urls, isUrls := c.GetPostFormArray("urls")
 	seasonName, ok := getSeasonName(out)
 	if !ok {
@@ -240,7 +241,11 @@ func addRemoteDownloadTask(c *gin.Context) {
 		avaUrls = []string{url}
 	}
 	task := make(map[string]any)
-	task["id"] = fmt.Sprintf("%v", time.Now().UnixNano())
+	if xunlei != "" {
+		task["id"] = "$XUNLEI_FID$"
+	} else {
+		task["id"] = "url"
+	}
 	task["urls"] = avaUrls
 	task["name"] = out
 	task["path"] = dir
