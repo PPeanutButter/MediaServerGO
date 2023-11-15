@@ -378,7 +378,14 @@ func main() {
 	cd.POST("/postTasks", NotImplement)
 	cd.GET("/runOnce", runOnce)
 	/* router end */
-	if err := router.Run(":" + strconv.Itoa(config.Port)); err != nil {
+	args := os.Args
+	port := ""
+	if len(args) > 1 {
+		port = args[1]
+	} else {
+		port = strconv.Itoa(config.Port)
+	}
+	if err := router.Run(":" + port); err != nil {
 		log.Fatal("Starting NAS Failed: ", err)
 	}
 }
