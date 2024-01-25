@@ -124,7 +124,7 @@ func getFileList(c *gin.Context) {
 	if errClaims != nil {
 		c.AbortWithStatus(http.StatusForbidden)
 	}
-	if _path == "/" {
+	if _path == "/" && len(diskManager.MountPoints) > 1 {
 		//异步唤醒全部磁盘，按顺序唤醒防止启动瞬间电流过大
 		go func() {
 			for _, disk := range diskManager.MountPoints {
@@ -175,10 +175,14 @@ func getFileList(c *gin.Context) {
 				}
 			}
 			if PathExists(path.Join(Root, dir, ".info")) {
-				var info Info
+				var info TVShow
 				err = json.Unmarshal(readBytes(path.Join(Root, dir, ".info")), &info)
-				score = int64(info.UserScoreChart)
-				title = info.Title
+				score = int64(info.VoteAverage * 10)
+				if info.Name != "" {
+					title = info.Name
+				} else {
+					title = info.Title
+				}
 			}
 		} else if isVideo(file.Name()) {
 			fType = "File"
