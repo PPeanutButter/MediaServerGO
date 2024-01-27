@@ -286,7 +286,7 @@ func getVideoPreview(c *gin.Context) {
 			cmd.Stderr = &out
 			err = cmd.Run()
 			if err != nil {
-				log.Println("getVideoPreview", "调用ffmpeg失败")
+				log.Println("getVideoPreview", "调用ffmpeg失败", cmd.Args)
 				log.Println(out.String())
 				c.AbortWithStatus(http.StatusServiceUnavailable)
 				return

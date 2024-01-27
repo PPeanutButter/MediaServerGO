@@ -91,7 +91,7 @@ func timeSeconds(_path string) float64 {
 		cmd.Stdout = &out
 		err := cmd.Run()
 		if err != nil {
-			log.Println("timeSeconds", "调用ffprobe", err)
+			log.Println("timeSeconds", "调用ffprobe", err, cmd.Args, out.String())
 			return -1
 		}
 		_result, err := strconv.ParseFloat(strings.Trim(strings.Trim(out.String(), "\n"), "\r\n"), 64)
